@@ -5,19 +5,54 @@
 #   - 여기 적힌 패턴과 일치하는 파일은 git add 대상에서 자동 제외됩니다.
 #   - 이미 커밋된 파일에는 적용되지 않습니다. (그 경우: git rm --cached <파일>)
 #   - 꼭 올려야 하는 예외는 git add -f <파일> 로 강제 추가할 수 있지만,
-#     1~3번 구역(보안)에 해당하는 파일은 강제 추가하지 마세요.
+#     0~3번 구역(보안)에 해당하는 파일은 강제 추가하지 마세요.
 #   - 어떤 규칙에 걸렸는지 확인: git check-ignore -v <파일>
+#   - 이 파일은 안전망일 뿐입니다. 파일 "이름"만 보고 거르므로, 문서 본문에
+#     적은 비밀번호나 평범한 이름의 개인정보 파일은 막지 못합니다.
 # =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# 0. 파일명만으로 걸러내는 개인 서류 · 명부 (안전망)
+#    아래 단어가 파일명에 들어가면 형식(pdf, jpg, xlsx, hwp ...)과 관계없이 제외됩니다.
+#    폴더명에 들어가면 그 폴더 전체가 제외됩니다.
+#    단, 안내 문서(.md)는 올릴 수 있도록 이 구역 맨 아래 줄(!*.md)에서 다시 허용합니다.
+#      예) 주민등록등본_홍길동.pdf -> 제외 / 주민등록등본 제출 안내.md -> 올라감
+#    주의: 이 구역은 반드시 1번 구역보다 위에 있어야 합니다. (아래로 옮기면 !*.md 가
+#          secrets.md, *.private.md 같은 보안 규칙까지 풀어 버립니다)
+# -----------------------------------------------------------------------------
+*주민등록*
+*등본*
+*신분증*
+*주민증*
+*운전면허*
+*여권*
+*통장*
+*가족관계*
+*이력서*
+*급여*명세*
+*급여*대장*
+*원천징수*
+*검진*결과*
+*증명사진*
+*명단*
+*명부*
+*연락망*
+*연락처*
+*인사기록*
+*계정*목록*
+*계정정보*
+*계정 정보*
+!*.md
 
 
 # -----------------------------------------------------------------------------
 # 1. 비밀값 · 환경설정 (API 키, 토큰, 접속 정보)
 # -----------------------------------------------------------------------------
-.env
-.env.*
+.env*
 *.env
-.envrc
-# 값이 비어 있는 "양식" 파일만 공유 허용
+*.env.*
+# 값이 비어 있는 "양식" 파일만 공유 허용 (정확히 이 세 이름만)
 !.env.example
 !.env.sample
 !.env.template
@@ -27,14 +62,36 @@ secrets.*
 secret.*
 *.secret
 *.secrets
+.secrets.*
+*[-_.]secret.y*ml
+*[-_.]secrets.y*ml
+*[-_.]secret*.txt
+*[-_.]secret*.json
 credentials
 credentials.*
 *credentials*.json
+*credentials*.csv
+*credentials*.txt
+*[-_]credentials
 client_secret*.json
+
+# 클라우드 콘솔에서 내려받는 키 파일
+*accessKeys*.csv
+rootkey.csv
 service-account*.json
 service_account*.json
-token.json
-tokens.json
+serviceAccount*.json
+*firebase-adminsdk*.json
+*[-_]key.json
+
+# 토큰 · API 키를 적어 둔 파일
+*token*.json
+*token*.txt
+token.pickle
+*.token
+*api*key*.txt
+*api*key*.csv
+*api*key*.json
 
 # 도구별 인증 정보 파일
 .netrc
@@ -44,17 +101,29 @@ _netrc
 .git-credentials
 .htpasswd
 .pgpass
+pgpass.conf
 .my.cnf
+.mylogin.cnf
+.vault-token
+.s3cfg
+.boto
+rclone.conf
+.terraformrc
+terraform.rc
 .dockercfg
-.docker/config.json
+**/.docker/config.json
 
 # 클라우드 · 인프라 자격 증명
 .aws/
 .azure/
 .gcloud/
+.ncloud/
+.oci/
 .kube/
 kubeconfig
 *.kubeconfig
+*kubeconfig*.yaml
+*kubeconfig*.yml
 *.tfstate
 *.tfstate.*
 *.tfvars
@@ -78,12 +147,32 @@ kubeconfig
 *.asc
 *.gpg
 *.pgp
+*.pk8
+*.bks
+*.jceks
+*.bcfks
+*.pkcs12
+*.pvk
+*.snk
+# 확장자를 덧붙여 저장한 키 (server.pem.txt, cert.pfx.bak ...)
+*.pem.*
+*.key.*
+*.pfx.*
+*.p12.*
+*.ppk.*
 
 # SSH 키
 id_rsa*
 id_dsa*
 id_ecdsa*
 id_ed25519*
+ssh_host_*_key*
+private[-_]key
+private[-_]key.txt
+privatekey
+privatekey.txt
+deploy[-_]key
+deploy[-_]key.txt
 .ssh/
 .gnupg/
 
@@ -93,35 +182,86 @@ GPKI/
 signCert.*
 signPri.*
 
-# 비밀번호 관리자 DB · VPN · 원격 접속 설정
+# 비밀번호 관리자 DB · 내보내기 파일
 *.kdbx
 *.kdb
 *.agilekeychain
+*.1pux
+*.1pif
+*.psafe3
+1Password Emergency Kit*.pdf
+bitwarden_*export*
+*lastpass*.csv
+logins.csv
+logins.json
+
+# 비밀번호 · 접속정보를 적어 둔 메모와 표 (브라우저 비밀번호 내보내기 포함)
+#   안내 문서는 .md 로 작성하면 제외되지 않습니다. 예) 비밀번호-정책.md
+*[Pp]assword*.csv
+*[Pp]assword*.txt
+*[Pp]assword*.xls*
+*비밀번호*.csv
+*비밀번호*.txt
+*비밀번호*.xls*
+*패스워드*.csv
+*패스워드*.txt
+*패스워드*.xls*
+*암호*.csv
+*접속정보*.csv
+*접속정보*.txt
+*접속정보*.xls*
+
+# 2단계 인증 복구 코드 · BitLocker 복구 키
+*recovery-codes*.txt
+*backup-codes*.txt
+BitLocker*.[Tt][Xx][Tt]
+*.bek
+
+# VPN · 원격 접속 설정 (서버 주소, 계정, 저장된 비밀번호가 들어 있음)
 *.ovpn
 *.rdp
 *.pcf
+*.rdg
+confCons.xml*
+WinSCP.ini
+sitemanager.xml
+recentservers.xml
+FileZilla.xml
+*.xsh
+*.xfp
+*.xts
+MobaXterm.ini
+*.mxtsessions
+*putty*.reg
+wg[0-9]*.conf
+*wireguard*.conf
+*.mobileconfig
 
 
 # -----------------------------------------------------------------------------
 # 3. 개인정보 · 대외비 (로컬 전용 보관 규칙)
 #    명단, 연락처, 계정 목록 등 올리면 안 되는 자료는 아래 폴더에 두거나
 #    파일명에 .private / .local 을 넣으면 자동으로 제외됩니다.
-#      예) private/입사자명단.xlsx, 연락처.private.xlsx, 메모.local.md
+#      예) private/입사자명단.xlsx, 연락처.private.xlsx, 메모.local.md, [대외비] 보고서.docx
+#    주의: 파일명 · 폴더명에 "대외비", "비공개" 가 들어가면 형식과 관계없이 제외됩니다.
+#          (.md 도 예외 없음. 개인정보 교육 자료 폴더는 "개인정보보호" 처럼 다른 이름으로)
 # -----------------------------------------------------------------------------
 private/
 secret/
 secrets/
 confidential/
 개인정보/
-대외비/
-비공개/
+*대외비*
+*비공개*
 *.private
 *.private.*
 *.local
 *.local.*
+*.confidential
 *.confidential.*
 
 # DB 덤프 · 데이터 파일 (개인정보가 통째로 들어 있는 경우가 많음)
+# 주의: *.sql 은 직접 작성한 조회 쿼리 파일도 함께 제외합니다. 예시 쿼리는 .md 문서의 코드 블록으로 올리세요.
 *.sql
 *.sql.gz
 *.dump
@@ -131,11 +271,20 @@ confidential/
 *.mdb
 *.accdb
 
-# 메일 · 메신저 보관 파일
+# 메일 · 주소록 · 메신저 보관 파일
 *.pst
 *.ost
 *.eml
 *.msg
+*.mbox
+*.olm
+*.vcf
+
+# 카카오톡 대화 내보내기
+KakaoTalk_*.txt
+KakaoTalkChats*.txt
+KakaoTalk_Chat_*.csv
+Talk_20[0-9][0-9].*.txt
 
 
 # -----------------------------------------------------------------------------
@@ -150,6 +299,11 @@ confidential/
 *.gz
 *.egg
 *.alz
+# 분할 압축 조각 (자료.7z.001, 자료.z01, 자료.a00 ...)
+*.zip.[0-9][0-9][0-9]
+*.7z.[0-9][0-9][0-9]
+*.z[0-9][0-9]
+*.a[0-9][0-9]
 *.bak
 *.backup
 *.old
@@ -158,7 +312,7 @@ confidential/
 
 
 # -----------------------------------------------------------------------------
-# 5. 로그 · 임시 파일
+# 5. 로그 · 임시 파일 · 진단용 덤프
 # -----------------------------------------------------------------------------
 *.log
 logs/
@@ -169,6 +323,11 @@ temp/
 *.pid
 *.stackdump
 *.dmp
+# 브라우저 · 네트워크 캡처, 메모리 덤프 (로그인 세션 토큰이 그대로 들어 있음)
+*.har
+*.pcap
+*.pcapng
+*.hprof
 
 
 # -----------------------------------------------------------------------------
@@ -178,11 +337,14 @@ temp/
 ~WRL*.tmp
 *.asv
 *.wbk
+*.xlk
+*.laccdb
+*.ldb
 .~lock.*#
 
 
 # -----------------------------------------------------------------------------
-# 7. 운영체제가 자동으로 만드는 파일
+# 7. 운영체제 · 동기화 프로그램이 자동으로 만드는 파일
 # -----------------------------------------------------------------------------
 # Windows
 Thumbs.db
@@ -207,6 +369,11 @@ $RECYCLE.BIN/
 .directory
 .Trash-*
 
+# Google Drive 바로가기 파일 (문서 ID와 계정 메일 주소가 들어 있음)
+*.gdoc
+*.gsheet
+*.gslides
+
 
 # -----------------------------------------------------------------------------
 # 8. 에디터 · IDE · AI 도구의 개인 설정
@@ -220,6 +387,7 @@ $RECYCLE.BIN/
 *.swp
 *.swo
 .obsidian/
+.trash/
 
 # Claude Code 개인 설정 (팀 공유 설정인 .claude/settings.json 은 추적 가능)
 .claude/settings.local.json
@@ -228,6 +396,7 @@ CLAUDE.local.md
 
 # -----------------------------------------------------------------------------
 # 9. 개발 도구 부산물 (스크립트 등을 추가하게 될 경우 대비)
+#    dist / build / out 은 저장소 최상위 폴더만 제외합니다. (docs/build/ 등은 올라감)
 # -----------------------------------------------------------------------------
 node_modules/
 __pycache__/
@@ -235,7 +404,7 @@ __pycache__/
 .venv/
 venv/
 .ipynb_checkpoints/
-dist/
-build/
-out/
+/dist/
+/build/
+/out/
 .cache/
