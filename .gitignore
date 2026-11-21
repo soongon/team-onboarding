@@ -1,0 +1,241 @@
+# =============================================================================
+# .gitignore — team-onboarding (온보딩 문서 저장소)
+#
+# 원칙: "올라가면 안 되는 것"은 실수로도 올라가지 않게 막는다.
+#   - 여기 적힌 패턴과 일치하는 파일은 git add 대상에서 자동 제외됩니다.
+#   - 이미 커밋된 파일에는 적용되지 않습니다. (그 경우: git rm --cached <파일>)
+#   - 꼭 올려야 하는 예외는 git add -f <파일> 로 강제 추가할 수 있지만,
+#     1~3번 구역(보안)에 해당하는 파일은 강제 추가하지 마세요.
+#   - 어떤 규칙에 걸렸는지 확인: git check-ignore -v <파일>
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# 1. 비밀값 · 환경설정 (API 키, 토큰, 접속 정보)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+*.env
+.envrc
+# 값이 비어 있는 "양식" 파일만 공유 허용
+!.env.example
+!.env.sample
+!.env.template
+
+# 이름에 secret / credential 이 들어간 설정 파일
+secrets.*
+secret.*
+*.secret
+*.secrets
+credentials
+credentials.*
+*credentials*.json
+client_secret*.json
+service-account*.json
+service_account*.json
+token.json
+tokens.json
+
+# 도구별 인증 정보 파일
+.netrc
+_netrc
+.npmrc
+.pypirc
+.git-credentials
+.htpasswd
+.pgpass
+.my.cnf
+.dockercfg
+.docker/config.json
+
+# 클라우드 · 인프라 자격 증명
+.aws/
+.azure/
+.gcloud/
+.kube/
+kubeconfig
+*.kubeconfig
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+
+
+# -----------------------------------------------------------------------------
+# 2. 개인키 · 인증서 · 비밀번호 저장소
+#    주의: *.key 는 Apple Keynote 발표 파일(.key)도 함께 제외합니다.
+# -----------------------------------------------------------------------------
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+*.ppk
+*.der
+*.p8
+*.asc
+*.gpg
+*.pgp
+
+# SSH 키
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+.ssh/
+.gnupg/
+
+# 공동인증서(구 공인인증서)
+NPKI/
+GPKI/
+signCert.*
+signPri.*
+
+# 비밀번호 관리자 DB · VPN · 원격 접속 설정
+*.kdbx
+*.kdb
+*.agilekeychain
+*.ovpn
+*.rdp
+*.pcf
+
+
+# -----------------------------------------------------------------------------
+# 3. 개인정보 · 대외비 (로컬 전용 보관 규칙)
+#    명단, 연락처, 계정 목록 등 올리면 안 되는 자료는 아래 폴더에 두거나
+#    파일명에 .private / .local 을 넣으면 자동으로 제외됩니다.
+#      예) private/입사자명단.xlsx, 연락처.private.xlsx, 메모.local.md
+# -----------------------------------------------------------------------------
+private/
+secret/
+secrets/
+confidential/
+개인정보/
+대외비/
+비공개/
+*.private
+*.private.*
+*.local
+*.local.*
+*.confidential.*
+
+# DB 덤프 · 데이터 파일 (개인정보가 통째로 들어 있는 경우가 많음)
+*.sql
+*.sql.gz
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+*.mdb
+*.accdb
+
+# 메일 · 메신저 보관 파일
+*.pst
+*.ost
+*.eml
+*.msg
+
+
+# -----------------------------------------------------------------------------
+# 4. 압축 · 백업 파일 (내용 검토 없이 민감 자료가 묻어 들어가기 쉬움)
+# -----------------------------------------------------------------------------
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.*
+*.tgz
+*.gz
+*.egg
+*.alz
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+
+# -----------------------------------------------------------------------------
+# 5. 로그 · 임시 파일
+# -----------------------------------------------------------------------------
+*.log
+logs/
+*.tmp
+*.temp
+tmp/
+temp/
+*.pid
+*.stackdump
+*.dmp
+
+
+# -----------------------------------------------------------------------------
+# 6. 문서 편집기 임시 · 잠금 파일 (MS Office, 한글, LibreOffice)
+# -----------------------------------------------------------------------------
+~$*
+~WRL*.tmp
+*.asv
+*.wbk
+.~lock.*#
+
+
+# -----------------------------------------------------------------------------
+# 7. 운영체제가 자동으로 만드는 파일
+# -----------------------------------------------------------------------------
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Linux
+*~
+.directory
+.Trash-*
+
+
+# -----------------------------------------------------------------------------
+# 8. 에디터 · IDE · AI 도구의 개인 설정
+# -----------------------------------------------------------------------------
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-workspace
+*.sublime-project
+.history/
+*.swp
+*.swo
+.obsidian/
+
+# Claude Code 개인 설정 (팀 공유 설정인 .claude/settings.json 은 추적 가능)
+.claude/settings.local.json
+CLAUDE.local.md
+
+
+# -----------------------------------------------------------------------------
+# 9. 개발 도구 부산물 (스크립트 등을 추가하게 될 경우 대비)
+# -----------------------------------------------------------------------------
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+dist/
+build/
+out/
+.cache/
